@@ -1,0 +1,1358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Photo Hustle</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    background: #101010;
+    color: white;
+    font-family: Arial, sans-serif;
+}
+
+button {
+    border: none;
+    border-radius: 8px;
+    padding: 12px 18px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    background: #3c8f50;
+    color: white;
+}
+
+button:hover {
+    background: #55aa64;
+}
+
+button.danger {
+    background: #8d3939;
+}
+
+button.blue {
+    background: #386da8;
+}
+
+/* TOP BAR */
+
+#topbar {
+    height: 60px;
+    background: #191919;
+    border-bottom: 2px solid #333;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+}
+
+#money {
+    color: #ffe36b;
+    font-weight: bold;
+}
+
+/* CAMERA */
+
+#cameraScreen {
+    min-height: calc(100vh - 60px);
+    background: #17261a;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#view {
+    position: relative;
+    width: min(900px, 95vw);
+    height: min(560px, 65vh);
+    margin-top: 25px;
+    overflow: hidden;
+    border: 5px solid #333;
+    border-radius: 10px;
+    background:
+        linear-gradient(
+            #304c35 0%,
+            #64785e 55%,
+            #344d2f 56%,
+            #1c301b 100%
+        );
+}
+
+/* fake scenery */
+
+.tree {
+    position: absolute;
+    bottom: 0;
+    width: 35px;
+    height: 300px;
+    background: #3b291d;
+}
+
+.tree::before {
+    content: "";
+    position: absolute;
+    width: 150px;
+    height: 150px;
+    top: -100px;
+    left: -55px;
+    border-radius: 50%;
+    background: #183b1d;
+}
+
+.t1 { left: 8%; transform: scale(.8); }
+.t2 { left: 25%; transform: scale(1.1); }
+.t3 { left: 72%; transform: scale(.9); }
+.t4 { left: 90%; transform: scale(.7); }
+
+/* subject */
+
+#subject {
+    position: absolute;
+    left: 50%;
+    top: 52%;
+    transform: translate(-50%, -50%);
+    font-size: 120px;
+    filter: drop-shadow(0 8px 5px black);
+    user-select: none;
+}
+
+#crosshair {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 30px;
+    opacity: .7;
+}
+
+/* camera controls */
+
+#cameraControls {
+    width: min(900px, 95vw);
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    padding: 20px;
+}
+
+#shutter {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    background: #eee;
+    color: #111;
+    border: 7px solid #aaa;
+    font-size: 32px;
+    padding: 0;
+}
+
+#shutter:hover {
+    background: white;
+}
+
+#hint {
+    color: #aaa;
+    margin-top: 0;
+}
+
+/* GALLERY */
+
+#galleryScreen {
+    display: none;
+    min-height: calc(100vh - 60px);
+    padding: 25px;
+    background: #171717;
+}
+
+#gallery {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.card {
+    width: 280px;
+    background: #252525;
+    padding: 12px;
+    border-radius: 10px;
+}
+
+.card canvas {
+    width: 100%;
+    display: block;
+    border-radius: 5px;
+}
+
+.card h3 {
+    margin-bottom: 5px;
+}
+
+.card p {
+    color: #ccc;
+}
+
+.cardButtons {
+    display: flex;
+    gap: 7px;
+    flex-wrap: wrap;
+}
+
+/* EDITOR */
+
+#editorScreen {
+    display: none;
+    min-height: calc(100vh - 60px);
+    padding: 20px;
+    background: #111;
+}
+
+#editorLayout {
+    max-width: 1100px;
+    margin: auto;
+    display: flex;
+    gap: 25px;
+    align-items: flex-start;
+}
+
+#editorCanvas {
+    width: min(700px, 65vw);
+    max-height: 70vh;
+    background: #222;
+    border: 2px solid #444;
+}
+
+#controls {
+    width: 300px;
+    background: #222;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.control {
+    margin: 20px 0;
+}
+
+.control label {
+    display: block;
+    margin-bottom: 8px;
+}
+
+.control input {
+    width: 100%;
+}
+
+#scoreBox {
+    background: #111;
+    padding: 15px;
+    border-radius: 8px;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+#score {
+    font-size: 30px;
+    color: #72e878;
+    font-weight: bold;
+}
+
+#value {
+    color: #ffe36b;
+    font-size: 22px;
+    font-weight: bold;
+}
+
+/* PHOTO TAKEN FLASH */
+
+#flash {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: white;
+    z-index: 100;
+}
+
+/* MOBILE */
+
+@media (max-width: 800px) {
+
+    #editorLayout {
+        flex-direction: column;
+    }
+
+    #editorCanvas {
+        width: 100%;
+    }
+
+    #controls {
+        width: 100%;
+    }
+
+    #view {
+        height: 55vh;
+    }
+
+}
+</style>
+</head>
+
+<body>
+
+<!-- TOP BAR -->
+
+<div id="topbar">
+
+    <b>📸 PHOTO HUSTLE</b>
+
+    <div>
+        💰 <span id="money">$0</span>
+    </div>
+
+</div>
+
+
+<!-- CAMERA -->
+
+<div id="cameraScreen">
+
+    <div id="view">
+
+        <div class="tree t1"></div>
+        <div class="tree t2"></div>
+        <div class="tree t3"></div>
+        <div class="tree t4"></div>
+
+        <div id="subject">👣</div>
+
+        <div id="crosshair">+</div>
+
+    </div>
+
+    <div id="cameraControls">
+
+        <button onclick="openGallery()">
+            🖼️ GALLERY
+        </button>
+
+        <button id="shutter" onclick="takePhoto()">
+            📸
+        </button>
+
+    </div>
+
+    <p id="hint">
+        Get the subject in the middle of the frame and take the shot!
+    </p>
+
+</div>
+
+
+<!-- GALLERY -->
+
+<div id="galleryScreen">
+
+    <h1>🖼️ YOUR PHOTOS</h1>
+
+    <button onclick="backToCamera()">
+        ← CAMERA
+    </button>
+
+    <div id="gallery"></div>
+
+</div>
+
+
+<!-- EDITOR -->
+
+<div id="editorScreen">
+
+    <h1>🖥️ PHOTO EDITOR</h1>
+
+    <div id="editorLayout">
+
+        <canvas
+            id="editorCanvas"
+            width="800"
+            height="500">
+        </canvas>
+
+
+        <div id="controls">
+
+            <div id="scoreBox">
+
+                PHOTO SCORE
+
+                <div id="score">0/100</div>
+
+                VALUE
+
+                <div id="value">$0</div>
+
+            </div>
+
+
+            <div class="control">
+
+                <label>☀️ Brightness</label>
+
+                <input
+                    id="brightness"
+                    type="range"
+                    min="-50"
+                    max="50"
+                    value="0">
+
+            </div>
+
+
+            <div class="control">
+
+                <label>🌓 Contrast</label>
+
+                <input
+                    id="contrast"
+                    type="range"
+                    min="-50"
+                    max="50"
+                    value="0">
+
+            </div>
+
+
+            <div class="control">
+
+                <label>🌈 Saturation</label>
+
+                <input
+                    id="saturation"
+                    type="range"
+                    min="-100"
+                    max="100"
+                    value="0">
+
+            </div>
+
+
+            <div class="control">
+
+                <label>🔍 Zoom</label>
+
+                <input
+                    id="zoom"
+                    type="range"
+                    min="100"
+                    max="160"
+                    value="100">
+
+            </div>
+
+
+            <button onclick="filterNormal()">
+                NORMAL
+            </button>
+
+            <button onclick="filterNight()">
+                🌙 NIGHT
+            </button>
+
+            <button onclick="filterOld()">
+                📼 OLD
+            </button>
+
+            <br><br>
+
+            <button onclick="saveEdit()">
+                💾 SAVE
+            </button>
+
+            <button onclick="sellCurrent()">
+                💰 SELL
+            </button>
+
+            <br><br>
+
+            <button class="danger" onclick="closeEditor()">
+                CANCEL
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<div id="flash"></div>
+
+
+<script>
+
+/* =========================================
+   GAME DATA
+========================================= */
+
+var money = 0;
+
+var photos = [];
+
+var nextPhotoId = 1;
+
+var editingPhoto = null;
+
+
+/* =========================================
+   ELEMENTS
+========================================= */
+
+var cameraScreen =
+    document.getElementById("cameraScreen");
+
+var galleryScreen =
+    document.getElementById("galleryScreen");
+
+var editorScreen =
+    document.getElementById("editorScreen");
+
+var editorCanvas =
+    document.getElementById("editorCanvas");
+
+var editorContext =
+    editorCanvas.getContext("2d");
+
+
+/* =========================================
+   RANDOM SUBJECTS
+========================================= */
+
+var subjects = [
+    {
+        emoji: "👣",
+        name: "Bigfoot",
+        base: 60
+    },
+    {
+        emoji: "🦆",
+        name: "Strange Duck",
+        base: 25
+    },
+    {
+        emoji: "👽",
+        name: "Alien",
+        base: 90
+    },
+    {
+        emoji: "🧌",
+        name: "Forest Goblin",
+        base: 75
+    },
+    {
+        emoji: "🦖",
+        name: "Tiny Dinosaur",
+        base: 100
+    }
+];
+
+
+function changeSubject() {
+
+    var subject =
+        subjects[
+            Math.floor(
+                Math.random() * subjects.length
+            )
+        ];
+
+    document.getElementById("subject").textContent =
+        subject.emoji;
+
+}
+
+
+/* Change subject occasionally */
+
+setInterval(changeSubject, 4000);
+
+
+/* =========================================
+   TAKE PHOTO
+========================================= */
+
+function takePhoto() {
+
+    var subjectEmoji =
+        document.getElementById("subject").textContent;
+
+
+    var subject = subjects.find(function(s) {
+
+        return s.emoji === subjectEmoji;
+
+    });
+
+
+    if (!subject) {
+
+        subject = subjects[0];
+
+    }
+
+
+    /* Flash */
+
+    var flash =
+        document.getElementById("flash");
+
+    flash.style.display = "block";
+
+    setTimeout(function() {
+
+        flash.style.display = "none";
+
+    }, 100);
+
+
+    /* Create photograph */
+
+    var canvas =
+        document.createElement("canvas");
+
+    canvas.width = 800;
+    canvas.height = 500;
+
+    var ctx =
+        canvas.getContext("2d");
+
+
+    /* Background */
+
+    var gradient =
+        ctx.createLinearGradient(
+            0,
+            0,
+            0,
+            500
+        );
+
+    gradient.addColorStop(
+        0,
+        "#344f3a"
+    );
+
+    gradient.addColorStop(
+        0.55,
+        "#66785f"
+    );
+
+    gradient.addColorStop(
+        1,
+        "#253b24"
+    );
+
+
+    ctx.fillStyle = gradient;
+
+    ctx.fillRect(
+        0,
+        0,
+        800,
+        500
+    );
+
+
+    /* Trees */
+
+    for (
+        var i = 0;
+        i < 10;
+        i++
+    ) {
+
+        var x =
+            Math.random() * 800;
+
+        var height =
+            100 + Math.random() * 230;
+
+
+        ctx.fillStyle =
+            "#39291d";
+
+        ctx.fillRect(
+            x,
+            500 - height,
+            30,
+            height
+        );
+
+
+        ctx.fillStyle =
+            "#183d1d";
+
+        ctx.beginPath();
+
+        ctx.arc(
+            x + 15,
+            500 - height,
+            75,
+            0,
+            Math.PI * 2
+        );
+
+        ctx.fill();
+
+    }
+
+
+    /* Subject */
+
+    ctx.font = "150px Arial";
+
+    ctx.textAlign = "center";
+
+    ctx.textBaseline = "middle";
+
+    ctx.fillText(
+        subject.emoji,
+        400,
+        270
+    );
+
+
+    /* Camera information */
+
+    ctx.font = "16px Arial";
+
+    ctx.fillStyle = "white";
+
+    ctx.textAlign = "right";
+
+    ctx.fillText(
+        "PHOTO #"
+        + nextPhotoId,
+        770,
+        470
+    );
+
+
+    /* Save photo */
+
+    photos.push({
+
+        id: nextPhotoId,
+
+        name: subject.name,
+
+        emoji: subject.emoji,
+
+        base: subject.base,
+
+        canvas: canvas,
+
+        brightness: 0,
+
+        contrast: 0,
+
+        saturation: 0,
+
+        zoom: 100,
+
+        filter: "none",
+
+        edited: false,
+
+        sold: false
+
+    });
+
+
+    nextPhotoId++;
+
+
+    alert(
+        "📸 PHOTO TAKEN!\n\n" +
+        subject.name +
+        " photographed!"
+    );
+
+}
+
+
+/* =========================================
+   GALLERY
+========================================= */
+
+function openGallery() {
+
+    cameraScreen.style.display = "none";
+
+    galleryScreen.style.display = "block";
+
+    renderGallery();
+
+}
+
+
+function backToCamera() {
+
+    galleryScreen.style.display = "none";
+
+    cameraScreen.style.display = "flex";
+
+}
+
+
+function renderGallery() {
+
+    var gallery =
+        document.getElementById("gallery");
+
+    gallery.innerHTML = "";
+
+
+    if (photos.length === 0) {
+
+        gallery.innerHTML =
+            "<h2>You don't have any photos yet.</h2>";
+
+        return;
+
+    }
+
+
+    photos.forEach(function(photo) {
+
+        var card =
+            document.createElement("div");
+
+        card.className = "card";
+
+
+        var canvas =
+            document.createElement("canvas");
+
+        canvas.width = 800;
+        canvas.height = 500;
+
+
+        canvas.getContext("2d")
+            .drawImage(
+                photo.canvas,
+                0,
+                0
+            );
+
+
+        var title =
+            document.createElement("h3");
+
+        title.textContent =
+            photo.emoji +
+            " " +
+            photo.name;
+
+
+        var info =
+            document.createElement("p");
+
+        info.innerHTML =
+            "Score: <b>" +
+            calculateScore(photo) +
+            "/100</b><br>" +
+            "Value: <b>$" +
+            calculateValue(photo) +
+            "</b>";
+
+
+        var buttons =
+            document.createElement("div");
+
+        buttons.className =
+            "cardButtons";
+
+
+        var edit =
+            document.createElement("button");
+
+        edit.textContent =
+            "✏️ EDIT";
+
+
+        edit.onclick =
+            function() {
+
+                openEditor(photo.id);
+
+            };
+
+
+        var sell =
+            document.createElement("button");
+
+        sell.textContent =
+            "💰 SELL";
+
+
+        sell.onclick =
+            function() {
+
+                sellPhoto(photo.id);
+
+            };
+
+
+        var deleteButton =
+            document.createElement("button");
+
+        deleteButton.textContent =
+            "🗑️";
+
+        deleteButton.className =
+            "danger";
+
+
+        deleteButton.onclick =
+            function() {
+
+                deletePhoto(photo.id);
+
+            };
+
+
+        buttons.appendChild(edit);
+
+        buttons.appendChild(sell);
+
+        buttons.appendChild(deleteButton);
+
+
+        card.appendChild(canvas);
+
+        card.appendChild(title);
+
+        card.appendChild(info);
+
+        card.appendChild(buttons);
+
+
+        gallery.appendChild(card);
+
+    });
+
+}
+
+
+/* =========================================
+   SCORE
+========================================= */
+
+function calculateScore(photo) {
+
+    var score = 60;
+
+
+    /* Editing can improve the photo */
+
+    score += Math.min(
+        15,
+        Math.abs(photo.contrast) / 4
+    );
+
+
+    score += Math.min(
+        10,
+        Math.abs(photo.saturation) / 8
+    );
+
+
+    if (
+        photo.brightness >= -15 &&
+        photo.brightness <= 15
+    ) {
+
+        score += 5;
+
+    }
+
+
+    if (photo.zoom > 105) {
+
+        score += 5;
+
+    }
+
+
+    if (photo.filter !== "none") {
+
+        score += 5;
+
+    }
+
+
+    if (photo.edited) {
+
+        score += 5;
+
+    }
+
+
+    return Math.max(
+        1,
+        Math.min(
+            100,
+            Math.round(score)
+        )
+    );
+
+}
+
+
+/* =========================================
+   MONEY VALUE
+========================================= */
+
+function calculateValue(photo) {
+
+    var score =
+        calculateScore(photo);
+
+    var value =
+        photo.base +
+        Math.round(score * 2);
+
+
+    return Math.max(
+        5,
+        value
+    );
+
+}
+
+
+/* =========================================
+   EDITOR
+========================================= */
+
+function openEditor(id) {
+
+    editingPhoto =
+        photos.find(function(photo) {
+
+            return photo.id === id;
+
+        });
+
+
+    if (!editingPhoto) {
+
+        return;
+
+    }
+
+
+    galleryScreen.style.display =
+        "none";
+
+    editorScreen.style.display =
+        "block";
+
+
+    document.getElementById("brightness").value =
+        editingPhoto.brightness;
+
+    document.getElementById("contrast").value =
+        editingPhoto.contrast;
+
+    document.getElementById("saturation").value =
+        editingPhoto.saturation;
+
+    document.getElementById("zoom").value =
+        editingPhoto.zoom;
+
+
+    updateEditor();
+
+}
+
+
+/* =========================================
+   UPDATE EDITOR
+========================================= */
+
+function updateEditor() {
+
+    if (!editingPhoto) {
+
+        return;
+
+    }
+
+
+    editingPhoto.brightness =
+        Number(
+            document.getElementById(
+                "brightness"
+            ).value
+        );
+
+
+    editingPhoto.contrast =
+        Number(
+            document.getElementById(
+                "contrast"
+            ).value
+        );
+
+
+    editingPhoto.saturation =
+        Number(
+            document.getElementById(
+                "saturation"
+            ).value
+        );
+
+
+    editingPhoto.zoom =
+        Number(
+            document.getElementById(
+                "zoom"
+            ).value
+        );
+
+
+    var zoom =
+        editingPhoto.zoom / 100;
+
+
+    editorContext.clearRect(
+        0,
+        0,
+        800,
+        500
+    );
+
+
+    editorContext.save();
+
+
+    editorContext.translate(
+        400,
+        250
+    );
+
+    editorContext.scale(
+        zoom,
+        zoom
+    );
+
+    editorContext.translate(
+        -400,
+        -250
+    );
+
+
+    editorContext.filter =
+        "brightness(" +
+        (100 +
+            editingPhoto.brightness) +
+        "%) " +
+
+        "contrast(" +
+        (100 +
+            editingPhoto.contrast) +
+        "%) " +
+
+        "saturate(" +
+        (100 +
+            editingPhoto.saturation) +
+        "%)";
+
+
+    if (
+        editingPhoto.filter ===
+        "night"
+    ) {
+
+        editorContext.filter +=
+            " hue-rotate(180deg)";
+
+    }
+
+
+    if (
+        editingPhoto.filter ===
+        "old"
+    ) {
+
+        editorContext.filter +=
+            " sepia(70%)";
+
+    }
+
+
+    editorContext.drawImage(
+        editingPhoto.canvas,
+        0,
+        0
+    );
+
+
+    editorContext.restore();
+
+
+    document.getElementById("score").textContent =
+        calculateScore(editingPhoto) +
+        "/100";
+
+
+    document.getElementById("value").textContent =
+        "$" +
+        calculateValue(editingPhoto);
+
+}
+
+
+/* Sliders */
+
+document.getElementById(
+    "brightness"
+).oninput = updateEditor;
+
+
+document.getElementById(
+    "contrast"
+).oninput = updateEditor;
+
+
+document.getElementById(
+    "saturation"
+).oninput = updateEditor;
+
+
+document.getElementById(
+    "zoom"
+).oninput = updateEditor;
+
+
+/* =========================================
+   FILTERS
+========================================= */
+
+function filterNormal() {
+
+    if (!editingPhoto) return;
+
+    editingPhoto.filter =
+        "none";
+
+    updateEditor();
+
+}
+
+
+function filterNight() {
+
+    if (!editingPhoto) return;
+
+    editingPhoto.filter =
+        "night";
+
+    updateEditor();
+
+}
+
+
+function filterOld() {
+
+    if (!editingPhoto) return;
+
+    editingPhoto.filter =
+        "old";
+
+    updateEditor();
+
+}
+
+
+/* =========================================
+   SAVE
+========================================= */
+
+function saveEdit() {
+
+    if (!editingPhoto) {
+
+        return;
+
+    }
+
+
+    editingPhoto.edited =
+        true;
+
+
+    alert(
+        "💾 PHOTO SAVED!\n\n" +
+        "Score: " +
+        calculateScore(editingPhoto) +
+        "/100\n" +
+        "Value: $" +
+        calculateValue(editingPhoto)
+    );
+
+
+    updateEditor();
+
+}
+
+
+/* =========================================
+   SELL
+========================================= */
+
+function sellPhoto(id) {
+
+    var photo =
+        photos.find(function(photo) {
+
+            return photo.id === id;
+
+        });
+
+
+    if (!photo) return;
+
+
+    if (photo.sold) {
+
+        alert(
+            "You already sold this photo!"
+        );
+
+        return;
+
+    }
+
+
+    var price =
+        calculateValue(photo);
+
+
+    if (
+        confirm(
+            "Sell this photo for $" +
+            price +
+            "?"
+        )
+    ) {
+
+        money += price;
+
+        photo.sold = true;
+
+        update
