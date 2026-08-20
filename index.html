@@ -1,0 +1,1335 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cryptid Photographer</title>
+
+<style>
+*{box-sizing:border-box}
+
+body{
+    margin:0;
+    background:#111;
+    color:white;
+    font-family:Arial,sans-serif;
+    overflow:hidden;
+}
+
+button{
+    cursor:pointer;
+    color:white;
+    background:#356b3d;
+    border:2px solid white;
+    border-radius:7px;
+    padding:12px 20px;
+    font-size:16px;
+}
+
+button:hover{
+    background:#4d914f;
+}
+
+/* START */
+
+#start{
+    position:fixed;
+    inset:0;
+    background:linear-gradient(#24472a,#071009);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+}
+
+#start h1{
+    font-size:50px;
+    text-shadow:0 5px 10px black;
+}
+
+#start p{
+    max-width:500px;
+    color:#ccc;
+    line-height:1.5;
+}
+
+#startButton{
+    margin-top:25px;
+    font-size:22px;
+    padding:18px 45px;
+}
+
+/* FOREST */
+
+#forest{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:linear-gradient(#142b18 0%,#405e40 55%,#243c22 56%,#182719 100%);
+}
+
+.tree{
+    position:absolute;
+    bottom:25%;
+    width:35px;
+    height:220px;
+    background:#38251a;
+}
+
+.tree:before{
+    content:"";
+    position:absolute;
+    width:150px;
+    height:150px;
+    left:-58px;
+    top:-100px;
+    border-radius:50%;
+    background:#173a1b;
+    box-shadow:
+        50px 20px #204923,
+        -40px 30px #1c431f;
+}
+
+#cryptid{
+    position:absolute;
+    left:60%;
+    top:50%;
+    transform:translate(-50%,-50%);
+    font-size:110px;
+    filter:drop-shadow(0 7px 5px black);
+}
+
+#cryptidName{
+    position:absolute;
+    left:60%;
+    top:64%;
+    transform:translateX(-50%);
+    background:rgba(0,0,0,.7);
+    padding:6px 10px;
+    border-radius:5px;
+}
+
+#crosshair{
+    position:absolute;
+    left:50%;
+    top:50%;
+    transform:translate(-50%,-50%);
+    font-size:30px;
+}
+
+#hud{
+    position:absolute;
+    left:15px;
+    top:15px;
+    background:rgba(0,0,0,.75);
+    padding:12px;
+    border-radius:8px;
+    line-height:1.8;
+}
+
+.money{
+    color:#ffe36b;
+    font-weight:bold;
+}
+
+#cameraButton{
+    position:absolute;
+    right:25px;
+    bottom:25px;
+    width:80px;
+    height:80px;
+    padding:0;
+    border-radius:50%;
+    font-size:28px;
+    background:#ddd;
+    border:5px solid white;
+}
+
+#homeButton{
+    position:absolute;
+    left:20px;
+    bottom:25px;
+}
+
+/* FLASH */
+
+#flash{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:white;
+    z-index:100;
+}
+
+/* HOME */
+
+#home{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:linear-gradient(#493a2e,#30231c);
+}
+
+#floor{
+    position:absolute;
+    bottom:0;
+    width:100%;
+    height:30%;
+    background:#4b3023;
+    border-top:8px solid #241811;
+}
+
+#homeMoney{
+    position:absolute;
+    left:15px;
+    top:15px;
+    background:rgba(0,0,0,.7);
+    padding:12px;
+    border-radius:7px;
+}
+
+#bed{
+    position:absolute;
+    left:8%;
+    bottom:22%;
+    width:280px;
+    height:120px;
+    background:#684633;
+    border-radius:10px;
+}
+
+#pillow{
+    position:absolute;
+    left:15px;
+    top:15px;
+    width:100px;
+    height:85px;
+    background:#ddd7c8;
+    border-radius:8px;
+}
+
+#desk{
+    position:absolute;
+    right:10%;
+    bottom:22%;
+    width:300px;
+    height:100px;
+    background:#583a26;
+}
+
+#computer{
+    position:absolute;
+    right:13%;
+    bottom:39%;
+    width:190px;
+    height:130px;
+    background:#111;
+    border:10px solid #292929;
+    border-radius:7px;
+    cursor:pointer;
+}
+
+#screen{
+    width:100%;
+    height:100%;
+    background:#061409;
+    color:#55ff7a;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+}
+
+#door{
+    position:absolute;
+    right:3%;
+    bottom:21%;
+    width:100px;
+    height:220px;
+    background:#563a24;
+    border:8px solid #2b1c13;
+    cursor:pointer;
+}
+
+/* COMPUTER */
+
+#computerUI{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:#071009;
+    z-index:50;
+}
+
+#computerHeader{
+    height:60px;
+    background:#17231a;
+    border-bottom:1px solid #536956;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:0 15px;
+}
+
+#desktop{
+    padding:30px;
+}
+
+.app{
+    display:inline-flex;
+    width:120px;
+    height:120px;
+    margin:10px;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    background:#18271b;
+    border-radius:8px;
+    cursor:pointer;
+}
+
+.app:hover{
+    background:#29452c;
+}
+
+.appIcon{
+    font-size:45px;
+}
+
+.appName{
+    margin-top:8px;
+}
+
+/* WINDOWS */
+
+.window{
+    display:none;
+    position:absolute;
+    left:5%;
+    right:5%;
+    top:10%;
+    bottom:5%;
+    background:#1b1b1b;
+    border:2px solid #627564;
+    border-radius:8px;
+    overflow:auto;
+}
+
+.windowHeader{
+    background:#292929;
+    padding:12px;
+    display:flex;
+    justify-content:space-between;
+}
+
+/* PHOTOS */
+
+#photoList{
+    padding:20px;
+}
+
+.photo{
+    display:inline-block;
+    vertical-align:top;
+    width:250px;
+    margin:10px;
+    padding:10px;
+    background:#292929;
+    border-radius:8px;
+}
+
+.photo canvas{
+    width:100%;
+}
+
+/* EDITOR */
+
+#editorContent{
+    display:flex;
+    gap:20px;
+    padding:20px;
+}
+
+#editCanvas{
+    width:65%;
+    max-height:65vh;
+    object-fit:contain;
+}
+
+#controls{
+    width:280px;
+    background:#292929;
+    padding:15px;
+    border-radius:8px;
+}
+
+.control{
+    margin:20px 0;
+}
+
+.control label{
+    display:block;
+    margin-bottom:6px;
+}
+
+.control input{
+    width:100%;
+}
+
+#estimated{
+    background:#111;
+    text-align:center;
+    padding:15px;
+    border-radius:6px;
+}
+
+#estimatedValue{
+    display:block;
+    color:#72e77b;
+    font-size:25px;
+    margin-top:8px;
+}
+
+/* SHOP */
+
+#shopContent{
+    padding:20px;
+}
+
+.shopItem{
+    display:inline-block;
+    vertical-align:top;
+    width:220px;
+    margin:10px;
+    padding:20px;
+    background:#292929;
+    border-radius:8px;
+    text-align:center;
+}
+
+.shopIcon{
+    font-size:50px;
+}
+
+/* WEB */
+
+#webContent{
+    padding:25px;
+}
+
+.article{
+    background:#292929;
+    padding:15px;
+    margin:15px 0;
+    border-left:4px solid #4d8955;
+}
+
+.article h3{
+    color:#7be283;
+}
+
+@media(max-width:700px){
+
+    #start h1{
+        font-size:36px;
+    }
+
+    #editorContent{
+        flex-direction:column;
+    }
+
+    #editCanvas,
+    #controls{
+        width:100%;
+    }
+
+}
+</style>
+</head>
+
+<body>
+
+<!-- START -->
+
+<div id="start">
+
+    <h1>CRYPTID PHOTOGRAPHER</h1>
+
+    <p>
+        Explore the forest, photograph cryptids,
+        bring your pictures home, edit them,
+        and sell them for money.
+    </p>
+
+    <button id="startButton">
+        START GAME
+    </button>
+
+</div>
+
+
+<!-- FOREST -->
+
+<div id="forest">
+
+    <div class="tree" style="left:5%"></div>
+    <div class="tree" style="left:20%;transform:scale(.8)"></div>
+    <div class="tree" style="left:40%;transform:scale(.7)"></div>
+    <div class="tree" style="left:65%;transform:scale(.9)"></div>
+    <div class="tree" style="left:85%;transform:scale(.8)"></div>
+
+    <div id="cryptid">👣</div>
+
+    <div id="cryptidName">
+        BIGFOOT
+    </div>
+
+    <div id="crosshair">+</div>
+
+    <div id="hud">
+
+        💰 <span class="money" id="forestMoney">$0</span>
+        <br>
+
+        📸 Photos:
+        <span id="photoCount">0</span>
+        <br>
+
+        📷 Camera:
+        <span id="cameraLevel">1</span>
+        <br>
+
+        <small>SPACE = TAKE PHOTO</small>
+
+    </div>
+
+    <button id="homeButton">
+        🏠 GO HOME
+    </button>
+
+    <button id="cameraButton">
+        📸
+    </button>
+
+</div>
+
+
+<div id="flash"></div>
+
+
+<!-- HOME -->
+
+<div id="home">
+
+    <div id="floor"></div>
+
+    <div id="homeMoney">
+        💰 <span class="money" id="homeMoneyValue">$0</span>
+    </div>
+
+    <div id="bed">
+        <div id="pillow"></div>
+    </div>
+
+    <div id="desk"></div>
+
+    <div id="computer">
+
+        <div id="screen">
+            CLICK TO USE<br>
+            COMPUTER
+        </div>
+
+    </div>
+
+    <div id="door"></div>
+
+</div>
+
+
+<!-- COMPUTER -->
+
+<div id="computerUI">
+
+    <div id="computerHeader">
+
+        <b>💻 MY COMPUTER</b>
+
+        <button id="closeComputer">
+            CLOSE
+        </button>
+
+    </div>
+
+
+    <div id="desktop">
+
+        <div class="app" id="photosApp">
+
+            <div class="appIcon">🖼️</div>
+            <div class="appName">PHOTOS</div>
+
+        </div>
+
+
+        <div class="app" id="shopApp">
+
+            <div class="appIcon">🛒</div>
+            <div class="appName">SHOP</div>
+
+        </div>
+
+
+        <div class="app" id="webApp">
+
+            <div class="appIcon">🌐</div>
+            <div class="appName">CRYPTID WEB</div>
+
+        </div>
+
+    </div>
+
+
+    <!-- PHOTO WINDOW -->
+
+    <div class="window" id="photoWindow">
+
+        <div class="windowHeader">
+
+            <b>🖼️ PHOTOGRAPHS</b>
+
+            <button class="closeWindow">
+                X
+            </button>
+
+        </div>
+
+        <div id="photoList"></div>
+
+    </div>
+
+
+    <!-- EDITOR WINDOW -->
+
+    <div class="window" id="editorWindow">
+
+        <div class="windowHeader">
+
+            <b>🖥️ PHOTO EDITOR</b>
+
+            <button class="closeWindow">
+                X
+            </button>
+
+        </div>
+
+
+        <div id="editorContent">
+
+            <canvas
+                id="editCanvas"
+                width="800"
+                height="500">
+            </canvas>
+
+
+            <div id="controls">
+
+                <div id="estimated">
+
+                    ESTIMATED VALUE
+
+                    <span id="estimatedValue">
+                        $0
+                    </span>
+
+                </div>
+
+
+                <div class="control">
+
+                    <label>☀️ Brightness</label>
+
+                    <input
+                        id="brightness"
+                        type="range"
+                        min="-40"
+                        max="40"
+                        value="0">
+
+                </div>
+
+
+                <div class="control">
+
+                    <label>🌓 Contrast</label>
+
+                    <input
+                        id="contrast"
+                        type="range"
+                        min="-40"
+                        max="40"
+                        value="0">
+
+                </div>
+
+
+                <div class="control">
+
+                    <label>🌈 Saturation</label>
+
+                    <input
+                        id="saturation"
+                        type="range"
+                        min="-50"
+                        max="50"
+                        value="0">
+
+                </div>
+
+
+                <div class="control">
+
+                    <label>🔍 Zoom</label>
+
+                    <input
+                        id="zoom"
+                        type="range"
+                        min="100"
+                        max="160"
+                        value="100">
+
+                </div>
+
+
+                <button id="saveEdit">
+                    SAVE EDIT
+                </button>
+
+                <button id="sellEdit">
+                    💰 SELL PHOTO
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- SHOP WINDOW -->
+
+    <div class="window" id="shopWindow">
+
+        <div class="windowHeader">
+
+            <b>🛒 CAMERA SHOP</b>
+
+            <button class="closeWindow">
+                X
+            </button>
+
+        </div>
+
+
+        <div id="shopContent">
+
+            <div class="shopItem">
+
+                <div class="shopIcon">🔭</div>
+
+                <h3>BETTER LENS</h3>
+
+                <p>Improve camera quality.</p>
+
+                <p>$100</p>
+
+                <button class="buy" data-cost="100">
+                    BUY
+                </button>
+
+            </div>
+
+
+            <div class="shopItem">
+
+                <div class="shopIcon">💡</div>
+
+                <h3>FLASH</h3>
+
+                <p>Better dark photographs.</p>
+
+                <p>$150</p>
+
+                <button class="buy" data-cost="150">
+                    BUY
+                </button>
+
+            </div>
+
+
+            <div class="shopItem">
+
+                <div class="shopIcon">📷</div>
+
+                <h3>CAMERA II</h3>
+
+                <p>Higher quality photographs.</p>
+
+                <p>$250</p>
+
+                <button class="buy" data-cost="250">
+                    BUY
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- WEB WINDOW -->
+
+    <div class="window" id="webWindow">
+
+        <div class="windowHeader">
+
+            <b>🌐 CRYPTID WEB</b>
+
+            <button class="closeWindow">
+                X
+            </button>
+
+        </div>
+
+
+        <div id="webContent">
+
+            <h2>CRYPTID WEB</h2>
+
+            <p>
+                The internet's least reliable
+                source of cryptid information.
+            </p>
+
+
+            <div class="article">
+
+                <h3>👣 BIGFOOT SPOTTED</h3>
+
+                <p>
+                    A local hiker claims something
+                    enormous walked through the woods.
+                </p>
+
+            </div>
+
+
+            <div class="article">
+
+                <h3>🩳 FRESNO NIGHTCRAWLER</h3>
+
+                <p>
+                    Strange white figures have
+                    reportedly been seen at night.
+                </p>
+
+            </div>
+
+
+            <div class="article">
+
+                <h3>🦇 MOTHMAN</h3>
+
+                <p>
+                    Glowing eyes have been reported
+                    near the abandoned bridge.
+                </p>
+
+            </div>
+
+
+            <div class="article">
+
+                <h3>🐐 JERSEY DEVIL</h3>
+
+                <p>
+                    Authorities say it doesn't exist.
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+/* GAME DATA */
+
+var money = 0;
+
+var photos = [];
+
+var photoNumber = 0;
+
+var cameraLevel = 1;
+
+var currentCryptid = 0;
+
+var editingPhoto = null;
+
+
+var cryptids = [
+
+    {
+        name:"BIGFOOT",
+        emoji:"👣",
+        value:100
+    },
+
+    {
+        name:"FRESNO NIGHTCRAWLER",
+        emoji:"🩳",
+        value:175
+    },
+
+    {
+        name:"JERSEY DEVIL",
+        emoji:"🐐",
+        value:300
+    },
+
+    {
+        name:"MOTHMAN",
+        emoji:"🦇",
+        value:350
+    },
+
+    {
+        name:"GOATMAN",
+        emoji:"🐐",
+        value:190
+    }
+
+];
+
+
+/* START */
+
+document.getElementById("startButton").onclick=function(){
+
+    document.getElementById("start").style.display="none";
+
+    document.getElementById("forest").style.display="block";
+
+    spawnCryptid();
+
+    updateUI();
+
+};
+
+
+/* CRYPTID */
+
+function spawnCryptid(){
+
+    currentCryptid=
+        Math.floor(Math.random()*cryptids.length);
+
+    var c=cryptids[currentCryptid];
+
+    var x=25+Math.random()*50;
+
+    var y=40+Math.random()*20;
+
+    document.getElementById("cryptid").textContent=
+        c.emoji;
+
+    document.getElementById("cryptidName").textContent=
+        c.name;
+
+    document.getElementById("cryptid").style.left=
+        x+"%";
+
+    document.getElementById("cryptid").style.top=
+        y+"%";
+
+    document.getElementById("cryptidName").style.left=
+        x+"%";
+
+    document.getElementById("cryptidName").style.top=
+        (y+13)+"%";
+
+}
+
+
+/* MOVE CRYPTID */
+
+setInterval(function(){
+
+    if(
+        document.getElementById("forest").style.display===
+        "block"
+    ){
+
+        spawnCryptid();
+
+    }
+
+},5000);
+
+
+/* CAMERA */
+
+document.getElementById("cameraButton").onclick=
+function(){
+
+    takePhoto();
+
+};
+
+
+document.addEventListener("keydown",function(e){
+
+    if(
+        e.code==="Space" &&
+        document.getElementById("forest").style.display===
+        "block"
+    ){
+
+        e.preventDefault();
+
+        takePhoto();
+
+    }
+
+});
+
+
+function takePhoto(){
+
+    var c=cryptids[currentCryptid];
+
+    var flash=document.getElementById("flash");
+
+    flash.style.display="block";
+
+    setTimeout(function(){
+
+        flash.style.display="none";
+
+    },120);
+
+
+    photoNumber++;
+
+
+    var canvas=document.createElement("canvas");
+
+    canvas.width=800;
+
+    canvas.height=500;
+
+    var ctx=canvas.getContext("2d");
+
+
+    var gradient=ctx.createLinearGradient(
+        0,0,0,500
+    );
+
+    gradient.addColorStop(
+        0,
+        "#1b3820"
+    );
+
+    gradient.addColorStop(
+        .55,
+        "#65765a"
+    );
+
+    gradient.addColorStop(
+        1,
+        "#243a21"
+    );
+
+    ctx.fillStyle=gradient;
+
+    ctx.fillRect(
+        0,
+        0,
+        800,
+        500
+    );
+
+
+    /* TREES IN PHOTO */
+
+    for(
+        var i=0;
+        i<12;
+        i++
+    ){
+
+        var x=Math.random()*800;
+
+        var h=100+Math.random()*220;
+
+        ctx.fillStyle="#38261a";
+
+        ctx.fillRect(
+            x,
+            430-h,
+            28,
+            h
+        );
+
+        ctx.fillStyle="#173b1d";
+
+        ctx.beginPath();
+
+        ctx.arc(
+            x+14,
+            430-h,
+            70,
+            0,
+            Math.PI*2
+        );
+
+        ctx.fill();
+
+    }
+
+
+    /* CRYPTID */
+
+    ctx.font="150px Arial";
+
+    ctx.textAlign="center";
+
+    ctx.textBaseline="middle";
+
+    ctx.fillText(
+        c.emoji,
+        400,
+        270
+    );
+
+
+    ctx.font="16px Arial";
+
+    ctx.fillStyle="white";
+
+    ctx.textAlign="right";
+
+    ctx.fillText(
+        "CRYPTIDCAM PHOTO "+
+        photoNumber,
+        770,
+        470
+    );
+
+
+    photos.push({
+
+        id:photoNumber,
+
+        name:c.name,
+
+        emoji:c.emoji,
+
+        value:c.value,
+
+        canvas:canvas,
+
+        brightness:0,
+
+        contrast:0,
+
+        saturation:0,
+
+        zoom:100,
+
+        edited:false,
+
+        sold:false
+
+    });
+
+
+    updateUI();
+
+}
+
+
+/* HOME */
+
+document.getElementById("homeButton").onclick=
+function(){
+
+    document.getElementById("forest").style.display="none";
+
+    document.getElementById("home").style.display="block";
+
+    updateUI();
+
+};
+
+
+document.getElementById("door").onclick=
+function(){
+
+    document.getElementById("home").style.display="none";
+
+    document.getElementById("forest").style.display="block";
+
+    spawnCryptid();
+
+};
+
+
+/* COMPUTER */
+
+document.getElementById("computer").onclick=
+function(){
+
+    document.getElementById("computerUI").style.display=
+        "block";
+
+};
+
+
+document.getElementById("closeComputer").onclick=
+function(){
+
+    document.getElementById("computerUI").style.display=
+        "none";
+
+    closeWindows();
+
+};
+
+
+/* APPS */
+
+document.getElementById("photosApp").onclick=
+function(){
+
+    closeWindows();
+
+    document.getElementById("photoWindow").style.display=
+        "block";
+
+    renderPhotos();
+
+};
+
+
+document.getElementById("shopApp").onclick=
+function(){
+
+    closeWindows();
+
+    document.getElementById("shopWindow").style.display=
+        "block";
+
+};
+
+
+document.getElementById("webApp").onclick=
+function(){
+
+    closeWindows();
+
+    document.getElementById("webWindow").style.display=
+        "block";
+
+};
+
+
+/* CLOSE WINDOWS */
+
+function closeWindows(){
+
+    var windows=
+        document.querySelectorAll(".window");
+
+    for(
+        var i=0;
+        i<windows.length;
+        i++
+    ){
+
+        windows[i].style.display="none";
+
+    }
+
+}
+
+
+var closeButtons=
+    document.querySelectorAll(".closeWindow");
+
+
+for(
+    var i=0;
+    i<closeButtons.length;
+    i++
+){
+
+    closeButtons[i].onclick=function(){
+
+        this.closest(".window").style.display=
+            "none";
+
+    };
+
+}
+
+
+/* PHOTO GALLERY */
+
+function renderPhotos(){
+
+    var list=
+        document.getElementById("photoList");
+
+    list.innerHTML="";
+
+
+    if(photos.length===0){
+
+        list.innerHTML=
+            "<h2>No photos yet.</h2>"+
+            "<p>Go into the forest and take a picture!</p>";
+
+        return;
+
+    }
+
+
+    for(
+        var i=0;
+        i<photos.length;
+        i++
+    ){
+
+        var p=photos[i];
+
+        var card=
+            document.createElement("div");
+
+        card.className="photo";
+
+
+        var canvas=
+            document.createElement("canvas");
+
+        canvas.width=800;
+
+        canvas
