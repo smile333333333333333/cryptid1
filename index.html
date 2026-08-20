@@ -1,0 +1,1129 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cryptid Photographer</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+html, body {
+    margin: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    font-family: Arial, sans-serif;
+}
+
+/* START SCREEN */
+
+#startScreen {
+    position: fixed;
+    inset: 0;
+
+    background:
+        linear-gradient(
+            #172b1a,
+            #071008
+        );
+
+    color: white;
+
+    display: flex;
+    flex-direction: column;
+
+    align-items: center;
+    justify-content: center;
+
+    text-align: center;
+
+    z-index: 10;
+}
+
+#startScreen h1 {
+    font-size: 50px;
+    margin: 10px;
+}
+
+#startScreen p {
+    color: #ccc;
+    max-width: 500px;
+}
+
+#startButton {
+    margin-top: 25px;
+
+    padding: 18px 45px;
+
+    font-size: 22px;
+
+    background: #3b7d43;
+    color: white;
+
+    border: 2px solid white;
+    border-radius: 8px;
+
+    cursor: pointer;
+}
+
+#startButton:hover {
+    background: #55a55e;
+}
+
+
+/* GAME */
+
+#game {
+    display: none;
+
+    position: fixed;
+    inset: 0;
+
+    background: #273e28;
+
+    color: white;
+}
+
+
+/* SKY */
+
+#sky {
+    position: absolute;
+    inset: 0;
+
+    background:
+        linear-gradient(
+            #162b1b 0%,
+            #385a39 55%,
+            #70865b 56%,
+            #30482b 100%
+        );
+}
+
+
+/* GROUND */
+
+#ground {
+    position: absolute;
+
+    left: -20%;
+    right: -20%;
+    bottom: -30%;
+
+    height: 65%;
+
+    background:
+        radial-gradient(
+            ellipse,
+            #587348,
+            #2c452c 60%,
+            #142214
+        );
+
+    transform: perspective(500px) rotateX(8deg);
+}
+
+
+/* TREES */
+
+.tree {
+    position: absolute;
+
+    width: 35px;
+    height: 180px;
+
+    background: #38251a;
+
+    border-radius: 5px;
+}
+
+.tree::before {
+    content: "";
+
+    position: absolute;
+
+    width: 140px;
+    height: 140px;
+
+    left: -52px;
+    top: -90px;
+
+    border-radius: 50%;
+
+    background: #19391e;
+
+    box-shadow:
+        50px 30px 0 #204823,
+        -35px 30px 0 #234d26;
+}
+
+
+/* HUD */
+
+#hud {
+    position: absolute;
+
+    top: 15px;
+    left: 15px;
+
+    z-index: 5;
+
+    padding: 12px 15px;
+
+    background: rgba(0,0,0,.65);
+
+    border: 1px solid #777;
+
+    border-radius: 8px;
+
+    line-height: 1.6;
+}
+
+
+/* CROSSHAIR */
+
+#crosshair {
+    position: absolute;
+
+    left: 50%;
+    top: 50%;
+
+    transform: translate(-50%, -50%);
+
+    font-size: 30px;
+
+    text-shadow: 0 2px 5px black;
+
+    z-index: 4;
+}
+
+
+/* CRYPTID */
+
+#cryptid {
+    position: absolute;
+
+    left: 65%;
+    top: 50%;
+
+    transform: translate(-50%, -50%);
+
+    font-size: 110px;
+
+    z-index: 3;
+
+    filter: drop-shadow(0 8px 5px black);
+
+    cursor: pointer;
+}
+
+#cryptidName {
+    position: absolute;
+
+    left: 65%;
+    top: calc(50% + 70px);
+
+    transform: translateX(-50%);
+
+    background: rgba(0,0,0,.6);
+
+    padding: 5px 8px;
+
+    border-radius: 4px;
+
+    font-size: 13px;
+
+    z-index: 3;
+}
+
+
+/* CAMERA */
+
+#cameraButton {
+    position: absolute;
+
+    right: 25px;
+    bottom: 30px;
+
+    z-index: 6;
+
+    width: 80px;
+    height: 80px;
+
+    border-radius: 50%;
+
+    border: 5px solid white;
+
+    background: #ddd;
+
+    font-size: 28px;
+
+    cursor: pointer;
+
+    box-shadow: 0 5px 15px black;
+}
+
+#cameraButton:active {
+    transform: scale(.9);
+}
+
+
+/* PHOTO LAB */
+
+#labButton {
+    position: absolute;
+
+    right: 20px;
+    top: 20px;
+
+    z-index: 6;
+
+    padding: 12px 18px;
+
+    border-radius: 6px;
+
+    border: 1px solid white;
+
+    background: #202020;
+
+    color: white;
+
+    cursor: pointer;
+}
+
+
+/* PHOTO LAB SCREEN */
+
+#photoLab {
+    display: none;
+
+    position: fixed;
+
+    inset: 0;
+
+    z-index: 20;
+
+    background: #111;
+
+    color: white;
+
+    overflow-y: auto;
+}
+
+#labTop {
+    position: sticky;
+
+    top: 0;
+
+    background: #1d1d1d;
+
+    padding: 15px;
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    border-bottom: 1px solid #555;
+}
+
+#labTop h2 {
+    margin: 0;
+}
+
+#closeLab {
+    padding: 9px 15px;
+
+    background: #8d2929;
+
+    color: white;
+
+    border: 0;
+
+    border-radius: 5px;
+
+    cursor: pointer;
+}
+
+#photos {
+    padding: 20px;
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            auto-fill,
+            minmax(230px, 1fr)
+        );
+
+    gap: 20px;
+}
+
+.photoCard {
+    background: #222;
+
+    border: 1px solid #555;
+
+    border-radius: 8px;
+
+    overflow: hidden;
+}
+
+.photoCard canvas {
+    width: 100%;
+
+    display: block;
+
+    background: #30482f;
+}
+
+.photoInfo {
+    padding: 12px;
+}
+
+.photoInfo h3 {
+    margin-top: 0;
+}
+
+.photoInfo p {
+    color: #bbb;
+}
+
+
+/* FLASH */
+
+#flash {
+    position: fixed;
+
+    inset: 0;
+
+    background: white;
+
+    opacity: 0;
+
+    z-index: 100;
+
+    pointer-events: none;
+}
+
+.flash {
+    animation: cameraFlash .25s;
+}
+
+@keyframes cameraFlash {
+
+    0% {
+        opacity: 0;
+    }
+
+    20% {
+        opacity: .9;
+    }
+
+    100% {
+        opacity: 0;
+    }
+
+}
+</style>
+</head>
+
+<body>
+
+
+<!-- START -->
+
+<div id="startScreen">
+
+    <h1>CRYPTID PHOTOGRAPHER</h1>
+
+    <p>
+        Explore the forest and photograph
+        strange creatures.
+    </p>
+
+    <p>
+        Take pictures and bring them back
+        to your photo lab.
+    </p>
+
+    <!-- DIRECT HTML CLICK -->
+    <button id="startButton" onclick="startGame()">
+        START GAME
+    </button>
+
+</div>
+
+
+<!-- GAME -->
+
+<div id="game">
+
+    <div id="sky"></div>
+
+    <div id="ground"></div>
+
+
+    <!-- TREES -->
+
+    <div class="tree"
+         style="left:5%;bottom:35%;">
+    </div>
+
+    <div class="tree"
+         style="left:20%;bottom:38%;transform:scale(.8);">
+    </div>
+
+    <div class="tree"
+         style="left:40%;bottom:36%;transform:scale(.7);">
+    </div>
+
+    <div class="tree"
+         style="left:62%;bottom:38%;transform:scale(.9);">
+    </div>
+
+    <div class="tree"
+         style="left:82%;bottom:35%;transform:scale(.8);">
+    </div>
+
+    <div class="tree"
+         style="left:95%;bottom:33%;">
+    </div>
+
+
+    <!-- CRYPTID -->
+
+    <div id="cryptid">
+        👣
+    </div>
+
+    <div id="cryptidName">
+        BIGFOOT
+    </div>
+
+
+    <!-- CROSSHAIR -->
+
+    <div id="crosshair">
+        +
+    </div>
+
+
+    <!-- HUD -->
+
+    <div id="hud">
+
+        📸 Photos:
+        <span id="photoCount">0</span>
+
+        <br>
+
+        🌲 Forest Expedition
+
+        <br>
+
+        <small>
+            SPACE = photograph
+        </small>
+
+        <br>
+
+        <small>
+            WASD = move
+        </small>
+
+    </div>
+
+
+    <!-- LAB -->
+
+    <button id="labButton" onclick="openLab()">
+        🖼️ PHOTO LAB
+    </button>
+
+
+    <!-- CAMERA -->
+
+    <button id="cameraButton" onclick="takePhoto()">
+        📸
+    </button>
+
+</div>
+
+
+<!-- FLASH -->
+
+<div id="flash"></div>
+
+
+<!-- PHOTO LAB -->
+
+<div id="photoLab">
+
+    <div id="labTop">
+
+        <h2>
+            🖼️ PHOTO LAB
+        </h2>
+
+        <button id="closeLab" onclick="closeLab()">
+            CLOSE
+        </button>
+
+    </div>
+
+    <div id="photos"></div>
+
+</div>
+
+
+<script>
+
+/* =========================
+   GAME VARIABLES
+========================= */
+
+let gameStarted = false;
+
+let photoCount = 0;
+
+let photos = [];
+
+let cryptidNames = [
+    "BIGFOOT",
+    "FRESNO NIGHTCRAWLER",
+    "JERSEY DEVIL",
+    "MOTHMAN",
+    "GOATMAN"
+];
+
+let currentCryptid = 0;
+
+
+/* =========================
+   START GAME
+========================= */
+
+function startGame() {
+
+    console.log("START BUTTON WORKED");
+
+    gameStarted = true;
+
+    document.getElementById(
+        "startScreen"
+    ).style.display = "none";
+
+    document.getElementById(
+        "game"
+    ).style.display = "block";
+
+    moveCryptid();
+
+}
+
+
+/* =========================
+   MOVE CRYPTID
+========================= */
+
+function moveCryptid() {
+
+    if (!gameStarted) {
+        return;
+    }
+
+    let x =
+        20 + Math.random() * 60;
+
+    let y =
+        35 + Math.random() * 30;
+
+    let cryptid =
+        document.getElementById("cryptid");
+
+    let name =
+        document.getElementById("cryptidName");
+
+    cryptid.style.left =
+        x + "%";
+
+    cryptid.style.top =
+        y + "%";
+
+    name.style.left =
+        x + "%";
+
+    name.style.top =
+        "calc(" + y + "% + 70px)";
+
+    currentCryptid =
+        Math.floor(
+            Math.random() *
+            cryptidNames.length
+        );
+
+    name.textContent =
+        cryptidNames[currentCryptid];
+
+}
+
+
+/* Move creature every few seconds */
+
+setInterval(
+    function() {
+
+        if (gameStarted) {
+            moveCryptid();
+        }
+
+    },
+    3500
+);
+
+
+/* =========================
+   TAKE PHOTO
+========================= */
+
+function takePhoto() {
+
+    if (!gameStarted) {
+        return;
+    }
+
+
+    /* FLASH */
+
+    let flash =
+        document.getElementById("flash");
+
+    flash.classList.remove("flash");
+
+    void flash.offsetWidth;
+
+    flash.classList.add("flash");
+
+
+    /* Increase counter */
+
+    photoCount++;
+
+    document.getElementById(
+        "photoCount"
+    ).textContent =
+        photoCount;
+
+
+    /* Create photograph */
+
+    let canvas =
+        document.createElement("canvas");
+
+    canvas.width = 800;
+
+    canvas.height = 500;
+
+    let ctx =
+        canvas.getContext("2d");
+
+
+    /* Forest sky */
+
+    let sky =
+        ctx.createLinearGradient(
+            0,
+            0,
+            0,
+            500
+        );
+
+    sky.addColorStop(
+        0,
+        "#213c28"
+    );
+
+    sky.addColorStop(
+        .55,
+        "#5a704e"
+    );
+
+    sky.addColorStop(
+        1,
+        "#1d2e1b"
+    );
+
+    ctx.fillStyle = sky;
+
+    ctx.fillRect(
+        0,
+        0,
+        800,
+        500
+    );
+
+
+    /* Trees */
+
+    for (
+        let i = 0;
+        i < 10;
+        i++
+    ) {
+
+        let x =
+            Math.random() * 800;
+
+        let height =
+            100 +
+            Math.random() * 200;
+
+
+        ctx.fillStyle =
+            "#362519";
+
+        ctx.fillRect(
+            x,
+            430 - height,
+            30,
+            height
+        );
+
+
+        ctx.fillStyle =
+            "#18391d";
+
+        ctx.beginPath();
+
+        ctx.arc(
+            x + 15,
+            430 - height,
+            70,
+            0,
+            Math.PI * 2
+        );
+
+        ctx.fill();
+
+    }
+
+
+    /* Cryptid */
+
+    let emojis = [
+        "👣",
+        "🩳",
+        "🐐",
+        "🦇",
+        "🐐"
+    ];
+
+    ctx.font =
+        "150px Arial";
+
+    ctx.textAlign =
+        "center";
+
+    ctx.textBaseline =
+        "middle";
+
+    ctx.fillText(
+        emojis[currentCryptid],
+        400,
+        270
+    );
+
+
+    /* Camera information */
+
+    ctx.font =
+        "18px Arial";
+
+    ctx.fillStyle =
+        "rgba(255,255,255,.7)";
+
+    ctx.textAlign =
+        "right";
+
+    ctx.fillText(
+        "CRYPTIDCAM",
+        770,
+        470
+    );
+
+
+    /* Save photo */
+
+    let photo = {
+
+        id: photoCount,
+
+        name:
+            cryptidNames[
+                currentCryptid
+            ],
+
+        canvas: canvas
+
+    };
+
+
+    photos.push(photo);
+
+
+    /* Message */
+
+    console.log(
+        "Photographed " +
+        photo.name
+    );
+
+}
+
+
+/* =========================
+   PHOTO LAB
+========================= */
+
+function openLab() {
+
+    if (!gameStarted) {
+        return;
+    }
+
+    document.getElementById(
+        "photoLab"
+    ).style.display = "block";
+
+    renderPhotos();
+
+}
+
+
+function closeLab() {
+
+    document.getElementById(
+        "photoLab"
+    ).style.display = "none";
+
+}
+
+
+/* =========================
+   SHOW PHOTOS
+========================= */
+
+function renderPhotos() {
+
+    let container =
+        document.getElementById(
+            "photos"
+        );
+
+    container.innerHTML = "";
+
+
+    if (photos.length === 0) {
+
+        container.innerHTML =
+            "<p>No photographs yet. Go find a cryptid!</p>";
+
+        return;
+
+    }
+
+
+    photos.forEach(
+        function(photo) {
+
+            let card =
+                document.createElement(
+                    "div"
+                );
+
+            card.className =
+                "photoCard";
+
+
+            let canvas =
+                document.createElement(
+                    "canvas"
+                );
+
+            canvas.width =
+                800;
+
+            canvas.height =
+                500;
+
+
+            let ctx =
+                canvas.getContext(
+                    "2d"
+                );
+
+
+            ctx.drawImage(
+                photo.canvas,
+                0,
+                0
+            );
+
+
+            let info =
+                document.createElement(
+                    "div"
+                );
+
+            info.className =
+                "photoInfo";
+
+
+            info.innerHTML =
+                "<h3>" +
+                photo.name +
+                "</h3>" +
+
+                "<p>Photograph #" +
+                photo.id +
+                "</p>" +
+
+                "<p>Photo captured successfully.</p>";
+
+
+            card.appendChild(
+                canvas
+            );
+
+            card.appendChild(
+                info
+            );
+
+
+            container.appendChild(
+                card
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================
+   KEYBOARD CAMERA
+========================= */
+
+document.addEventListener(
+    "keydown",
+    function(event) {
+
+        if (
+            event.code === "Space" &&
+            gameStarted &&
+            document.getElementById(
+                "photoLab"
+            ).style.display !== "block"
+        ) {
+
+            event.preventDefault();
+
+            takePhoto();
+
+        }
+
+    }
+);
+
+
+/* =========================
+   WASD TEST
+========================= */
+
+let keys = {};
+
+document.addEventListener(
+    "keydown",
+    function(event) {
+
+        keys[
+            event.key.toLowerCase()
+        ] = true;
+
+    }
+);
+
+document.addEventListener(
+    "keyup",
+    function(event) {
+
+        keys[
+            event.key.toLowerCase()
+        ] = false;
+
+    }
+);
+
+
+/* Tiny first-person movement */
+
+let cameraX = 0;
+
+let cameraY = 0;
+
+
+function movementLoop() {
+
+    if (
+        gameStarted &&
+        document.getElementById(
+            "photoLab"
+        ).style.display !== "block"
+    ) {
+
+        if (keys["a"]) {
+            cameraX -= 1;
+        }
+
+        if (keys["d"]) {
+            cameraX += 1;
+        }
+
+        if (keys["w"]) {
+            cameraY -= 1;
+        }
+
+        if (keys["s"]) {
+            cameraY += 1;
+        }
+
+
+        document.getElementById(
+            "game"
+        ).style.transform =
+            "translate(" +
+            cameraX +
+            "px," +
+            cameraY +
+            "px)";
+
+    }
+
+
+    requestAnimationFrame(
+        movementLoop
+    );
+
+}
+
+movementLoop();
+
+</script>
+
+</body>
+  </html>
