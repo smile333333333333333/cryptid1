@@ -1,0 +1,1393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cryptid Film Studio</title>
+
+<style>
+*{
+    box-sizing:border-box;
+}
+
+body{
+    margin:0;
+    background:#111;
+    color:white;
+    font-family:Arial,sans-serif;
+}
+
+button{
+    background:#3f8f50;
+    color:white;
+    border:0;
+    border-radius:8px;
+    padding:11px 16px;
+    font-size:16px;
+    cursor:pointer;
+    margin:4px;
+}
+
+button:hover{
+    background:#5caf68;
+}
+
+button.red{
+    background:#923d3d;
+}
+
+button.blue{
+    background:#376ba3;
+}
+
+header{
+    height:60px;
+    background:#1d1d1d;
+    border-bottom:2px solid #333;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:0 18px;
+}
+
+.money{
+    color:#ffe16a;
+    font-weight:bold;
+}
+
+.screen{
+    display:none;
+    min-height:calc(100vh - 60px);
+    padding:25px;
+}
+
+#studio{
+    display:block;
+    background:#18251a;
+    text-align:center;
+}
+
+#studio h1{
+    font-size:42px;
+}
+
+#camera{
+    position:relative;
+    width:min(900px,95vw);
+    height:500px;
+    margin:20px auto;
+    overflow:hidden;
+    border:5px solid #333;
+    border-radius:10px;
+    background:
+        linear-gradient(
+            #304b35,
+            #65775d 55%,
+            #344d2e 56%,
+            #172916
+        );
+}
+
+.tree{
+    position:absolute;
+    bottom:0;
+    width:35px;
+    height:300px;
+    background:#3b291d;
+}
+
+.tree:after{
+    content:"";
+    position:absolute;
+    width:150px;
+    height:150px;
+    background:#173b1b;
+    border-radius:50%;
+    top:-90px;
+    left:-55px;
+}
+
+.tree1{left:8%}
+.tree2{left:25%;transform:scale(.8)}
+.tree3{left:75%;transform:scale(1.1)}
+.tree4{left:90%;transform:scale(.7)}
+
+#creature{
+    position:absolute;
+    left:50%;
+    top:52%;
+    transform:translate(-50%,-50%);
+    font-size:125px;
+    filter:drop-shadow(0 8px 5px black);
+}
+
+#crosshair{
+    position:absolute;
+    left:50%;
+    top:50%;
+    transform:translate(-50%,-50%);
+    font-size:30px;
+}
+
+#creatureName{
+    position:absolute;
+    left:50%;
+    top:68%;
+    transform:translateX(-50%);
+    background:rgba(0,0,0,.7);
+    padding:7px 12px;
+    border-radius:6px;
+}
+
+#clipMessage{
+    color:#9bea9c;
+    min-height:24px;
+}
+
+#clips{
+    display:flex;
+    justify-content:center;
+    flex-wrap:wrap;
+    gap:10px;
+}
+
+.clip{
+    background:#292929;
+    padding:12px;
+    border-radius:8px;
+    width:170px;
+}
+
+.clip.selected{
+    outline:3px solid #ffe16a;
+}
+
+.clipEmoji{
+    font-size:50px;
+}
+
+#editor{
+    background:#121212;
+}
+
+.editorLayout{
+    max-width:1100px;
+    margin:auto;
+    display:flex;
+    gap:25px;
+}
+
+#preview{
+    width:min(700px,65vw);
+    height:440px;
+    border:4px solid #333;
+    background:#263c29;
+    position:relative;
+    overflow:hidden;
+}
+
+#previewCreature{
+    position:absolute;
+    left:50%;
+    top:50%;
+    transform:translate(-50%,-50%);
+    font-size:130px;
+    filter:drop-shadow(0 8px 5px black);
+}
+
+#previewText{
+    position:absolute;
+    left:20px;
+    bottom:20px;
+    font-size:20px;
+    background:rgba(0,0,0,.7);
+    padding:8px;
+}
+
+#timeline{
+    position:absolute;
+    left:0;
+    right:0;
+    bottom:0;
+    height:70px;
+    background:rgba(0,0,0,.8);
+    display:flex;
+    align-items:center;
+    gap:5px;
+    padding:8px;
+}
+
+.timelineClip{
+    height:50px;
+    min-width:80px;
+    background:#38523b;
+    border:2px solid #777;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:25px;
+}
+
+#tools{
+    width:300px;
+    background:#222;
+    border-radius:10px;
+    padding:18px;
+}
+
+.tool{
+    margin:15px 0;
+}
+
+.tool label{
+    display:block;
+    margin-bottom:7px;
+}
+
+.tool input{
+    width:100%;
+}
+
+#rating{
+    background:#101010;
+    padding:15px;
+    text-align:center;
+    border-radius:8px;
+}
+
+#score{
+    font-size:34px;
+    color:#73e47d;
+    font-weight:bold;
+}
+
+#filmValue{
+    color:#ffe16a;
+    font-size:23px;
+    font-weight:bold;
+}
+
+#films{
+    background:#171717;
+}
+
+.filmCard{
+    display:inline-block;
+    vertical-align:top;
+    width:300px;
+    background:#292929;
+    margin:10px;
+    padding:14px;
+    border-radius:10px;
+}
+
+.filmPreview{
+    height:180px;
+    background:#304b35;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:90px;
+    border-radius:5px;
+}
+
+#market{
+    background:#181818;
+}
+
+.news{
+    max-width:700px;
+    margin:15px auto;
+    background:#292929;
+    padding:18px;
+    border-left:4px solid #4c9b57;
+}
+
+#flash{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:white;
+    z-index:100;
+}
+
+@media(max-width:800px){
+
+    .editorLayout{
+        flex-direction:column;
+    }
+
+    #preview,
+    #tools{
+        width:100%;
+    }
+
+    #camera{
+        height:55vh;
+    }
+
+}
+</style>
+</head>
+
+<body>
+
+<header>
+
+    <b>🎥 CRYPTID FILM STUDIO</b>
+
+    <div>
+        💰 <span id="money">$0</span>
+    </div>
+
+</header>
+
+
+<!-- STUDIO -->
+
+<div id="studio" class="screen">
+
+    <h1>🎥 FILM A CRYPTID</h1>
+
+    <p>
+        Find something weird and record clips of it.
+    </p>
+
+    <div id="camera">
+
+        <div class="tree tree1"></div>
+        <div class="tree tree2"></div>
+        <div class="tree tree3"></div>
+        <div class="tree tree4"></div>
+
+        <div id="creature">👣</div>
+
+        <div id="creatureName">
+            BIGFOOT
+        </div>
+
+        <div id="crosshair">+</div>
+
+    </div>
+
+    <div>
+
+        <button onclick="recordClip()">
+            🎥 RECORD CLIP
+        </button>
+
+        <button onclick="openFilms()">
+            🎞️ MY FILMS
+        </button>
+
+        <button onclick="openMarket()">
+            🌐 FILM MARKET
+        </button>
+
+    </div>
+
+    <p id="clipMessage"></p>
+
+    <div id="clips"></div>
+
+</div>
+
+
+<!-- EDITOR -->
+
+<div id="editor" class="screen">
+
+    <h1>🎬 FILM EDITOR</h1>
+
+    <div class="editorLayout">
+
+        <div id="preview">
+
+            <div id="previewCreature">
+                👣
+            </div>
+
+            <div id="previewText">
+                MY CRYPTID FILM
+            </div>
+
+            <div id="timeline"></div>
+
+        </div>
+
+
+        <div id="tools">
+
+            <div id="rating">
+
+                FILM RATING
+
+                <div id="score">
+                    0/100
+                </div>
+
+                ESTIMATED VALUE
+
+                <div id="filmValue">
+                    $0
+                </div>
+
+            </div>
+
+
+            <div class="tool">
+
+                <label>🎵 Music</label>
+
+                <select id="music">
+
+                    <option value="none">
+                        No Music
+                    </option>
+
+                    <option value="dramatic">
+                        Dramatic
+                    </option>
+
+                    <option value="goofy">
+                        Goofy
+                    </option>
+
+                    <option value="scary">
+                        Scary
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="tool">
+
+                <label>🎨 Visual Effect</label>
+
+                <select id="effect">
+
+                    <option value="none">
+                        None
+                    </option>
+
+                    <option value="night">
+                        Night Vision
+                    </option>
+
+                    <option value="old">
+                        Old Film
+                    </option>
+
+                    <option value="static">
+                        Static
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="tool">
+
+                <label>🎬 Film Title</label>
+
+                <input
+                    id="title"
+                    value="MY CRYPTID FILM"
+                    maxlength="30"
+                    style="width:100%;padding:9px">
+
+            </div>
+
+
+            <button onclick="saveFilm()">
+                💾 SAVE FILM
+            </button>
+
+            <button onclick="sellFilm()">
+                💰 SELL FILM
+            </button>
+
+            <button class="red" onclick="closeEditor()">
+                CANCEL
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- FILMS -->
+
+<div id="films" class="screen">
+
+    <h1>🎞️ MY FILMS</h1>
+
+    <button onclick="backToStudio()">
+        ← STUDIO
+    </button>
+
+    <div id="filmList"></div>
+
+</div>
+
+
+<!-- MARKET -->
+
+<div id="market" class="screen">
+
+    <h1>🌐 CRYPTID FILM MARKET</h1>
+
+    <button onclick="backToStudio()">
+        ← STUDIO
+    </button>
+
+    <div class="news">
+
+        <h2>📺 CURRENT TREND</h2>
+
+        <p>
+            People are obsessed with mysterious
+            creatures caught on camera.
+        </p>
+
+        <p>
+            Dramatic music seems to make everything
+            37% more interesting.
+        </p>
+
+    </div>
+
+    <div class="news">
+
+        <h2>🔥 TRENDING</h2>
+
+        <p>
+            "THING IN THE WOODS" — 94/100
+        </p>
+
+        <p>
+            "WHY IS THAT DUCK SO LARGE?" — 87/100
+        </p>
+
+    </div>
+
+</div>
+
+
+<div id="flash"></div>
+
+
+<script>
+
+/* =========================
+   DATA
+========================= */
+
+var money = 0;
+
+var clips = [];
+
+var films = [];
+
+var currentFilm = null;
+
+var creatures = [
+
+    {
+        name:"BIGFOOT",
+        emoji:"👣",
+        base:70
+    },
+
+    {
+        name:"FRESNO NIGHTCRAWLER",
+        emoji:"🩳",
+        base:85
+    },
+
+    {
+        name:"JERSEY DEVIL",
+        emoji:"🐐",
+        base:90
+    },
+
+    {
+        name:"MOTHMAN",
+        emoji:"🦇",
+        base:100
+    },
+
+    {
+        name:"ALIEN",
+        emoji:"👽",
+        base:95
+    },
+
+    {
+        name:"TINY DINOSAUR",
+        emoji:"🦖",
+        base:80
+    }
+
+];
+
+var currentCreature =
+    creatures[0];
+
+
+/* =========================
+   CHANGE CREATURE
+========================= */
+
+function changeCreature(){
+
+    currentCreature =
+        creatures[
+            Math.floor(
+                Math.random() *
+                creatures.length
+            )
+        ];
+
+    document.getElementById(
+        "creature"
+    ).textContent =
+        currentCreature.emoji;
+
+    document.getElementById(
+        "creatureName"
+    ).textContent =
+        currentCreature.name;
+
+}
+
+setInterval(
+    changeCreature,
+    5000
+);
+
+
+/* =========================
+   RECORD CLIP
+========================= */
+
+function recordClip(){
+
+    if(clips.length >= 8){
+
+        alert(
+            "Your camera roll is full!\n"+
+            "Put some clips into a film first."
+        );
+
+        return;
+
+    }
+
+    var flash =
+        document.getElementById("flash");
+
+    flash.style.display="block";
+
+    setTimeout(function(){
+
+        flash.style.display="none";
+
+    },100);
+
+
+    var clip = {
+
+        id:Date.now(),
+
+        creature:currentCreature.name,
+
+        emoji:currentCreature.emoji,
+
+        quality:
+            50 +
+            Math.floor(
+                Math.random()*51
+            )
+
+    };
+
+
+    clips.push(clip);
+
+    document.getElementById(
+        "clipMessage"
+    ).textContent =
+        "🎥 CLIP RECORDED: "+
+        clip.creature;
+
+
+    renderClips();
+
+}
+
+
+/* =========================
+   CLIP LIST
+========================= */
+
+function renderClips(){
+
+    var area =
+        document.getElementById(
+            "clips"
+        );
+
+    area.innerHTML="";
+
+
+    clips.forEach(function(clip){
+
+        var div =
+            document.createElement(
+                "div"
+            );
+
+        div.className="clip";
+
+        div.innerHTML =
+            "<div class='clipEmoji'>"+
+            clip.emoji+
+            "</div>"+
+            "<b>"+
+            clip.creature+
+            "</b>"+
+            "<br>"+
+            "Quality: "+
+            clip.quality;
+
+
+        area.appendChild(div);
+
+    });
+
+}
+
+
+/* =========================
+   CREATE FILM
+========================= */
+
+function openEditor(){
+
+    if(clips.length < 2){
+
+        alert(
+            "You need at least 2 clips "+
+            "to make a film!"
+        );
+
+        return;
+
+    }
+
+
+    currentFilm = {
+
+        clips:
+            clips.slice(),
+
+        music:"none",
+
+        effect:"none",
+
+        title:"MY CRYPTID FILM",
+
+        saved:false,
+
+        sold:false
+
+    };
+
+
+    document.getElementById(
+        "studio"
+    ).style.display="none";
+
+    document.getElementById(
+        "editor"
+    ).style.display="block";
+
+
+    updateEditor();
+
+}
+
+
+/* Make the editor button appear after recording */
+
+var createButton =
+    document.createElement(
+        "button"
+    );
+
+createButton.textContent =
+    "🎬 MAKE FILM";
+
+createButton.onclick =
+    openEditor;
+
+document.getElementById(
+    "studio"
+).insertBefore(
+    createButton,
+    document.getElementById(
+        "studio"
+    ).querySelector(
+        "#clips"
+    )
+);
+
+
+/* =========================
+   EDITOR
+========================= */
+
+function updateEditor(){
+
+    if(!currentFilm)
+        return;
+
+
+    var music =
+        document.getElementById(
+            "music"
+        ).value;
+
+    var effect =
+        document.getElementById(
+            "effect"
+        ).value;
+
+    var title =
+        document.getElementById(
+            "title"
+        ).value;
+
+
+    currentFilm.music=music;
+
+    currentFilm.effect=effect;
+
+    currentFilm.title=title;
+
+
+    var first =
+        currentFilm.clips[0];
+
+
+    document.getElementById(
+        "previewCreature"
+    ).textContent =
+        first.emoji;
+
+
+    document.getElementById(
+        "previewText"
+    ).textContent =
+        title;
+
+
+    var preview =
+        document.getElementById(
+            "preview"
+        );
+
+
+    preview.style.filter="none";
+
+
+    if(effect==="night"){
+
+        preview.style.filter =
+            "sepia(1) hue-rotate(80deg) saturate(3)";
+
+    }
+
+
+    if(effect==="old"){
+
+        preview.style.filter =
+            "sepia(.8) contrast(1.2)";
+
+    }
+
+
+    if(effect==="static"){
+
+        preview.style.filter =
+            "contrast(1.6) brightness(.8)";
+
+    }
+
+
+    var timeline =
+        document.getElementById(
+            "timeline"
+        );
+
+    timeline.innerHTML="";
+
+
+    currentFilm.clips.forEach(
+        function(clip){
+
+            var item =
+                document.createElement(
+                    "div"
+                );
+
+            item.className =
+                "timelineClip";
+
+            item.textContent =
+                clip.emoji;
+
+            timeline.appendChild(
+                item
+            );
+
+        }
+    );
+
+
+    var rating =
+        calculateRating();
+
+
+    document.getElementById(
+        "score"
+    ).textContent =
+        rating+"/100";
+
+
+    document.getElementById(
+        "filmValue"
+    ).textContent =
+        "$"+calculateValue();
+
+}
+
+
+/* Editor controls */
+
+document.getElementById(
+    "music"
+).onchange =
+    updateEditor;
+
+document.getElementById(
+    "effect"
+).onchange =
+    updateEditor;
+
+document.getElementById(
+    "title"
+).oninput =
+    updateEditor;
+
+
+/* =========================
+   RATING
+========================= */
+
+function calculateRating(){
+
+    if(!currentFilm)
+        return 0;
+
+
+    var total=0;
+
+
+    currentFilm.clips.forEach(
+        function(clip){
+
+            total += clip.quality;
+
+        }
+    );
+
+
+    var average =
+        total /
+        currentFilm.clips.length;
+
+
+    var bonus=0;
+
+
+    if(
+        currentFilm.music !==
+        "none"
+    ){
+
+        bonus+=7;
+
+    }
+
+
+    if(
+        currentFilm.effect !==
+        "none"
+    ){
+
+        bonus+=7;
+
+    }
+
+
+    if(
+        currentFilm.clips.length>=4
+    ){
+
+        bonus+=8;
+
+    }
+
+
+    if(
+        currentFilm.clips.length>=6
+    ){
+
+        bonus+=5;
+
+    }
+
+
+    return Math.min(
+        100,
+        Math.round(
+            average*.75+
+            bonus
+        )
+    );
+
+}
+
+
+/* =========================
+   VALUE
+========================= */
+
+function calculateValue(){
+
+    var rating =
+        calculateRating();
+
+
+    return Math.round(
+        rating*5
+    );
+
+}
+
+
+/* =========================
+   SAVE
+========================= */
+
+function saveFilm(){
+
+    if(!currentFilm)
+        return;
+
+
+    currentFilm.saved=true;
+
+
+    films.push(
+        JSON.parse(
+            JSON.stringify(
+                currentFilm
+            )
+        )
+    );
+
+
+    alert(
+        "🎬 FILM SAVED!\n\n"+
+        currentFilm.title+
+        "\n"+
+        "Rating: "+
+        calculateRating()+
+        "/100\n"+
+        "Value: $"+
+        calculateValue()
+    );
+
+}
+
+
+/* =========================
+   SELL
+========================= */
+
+function sellFilm(){
+
+    if(!currentFilm)
+        return;
+
+
+    var price =
+        calculateValue();
+
+
+    if(
+        !confirm(
+            "Sell \""+
+            currentFilm.title+
+            "\" for $"+
+            price+
+            "?"
+        )
+    ){
+
+        return;
+
+    }
+
+
+    money += price;
+
+    updateMoney();
+
+
+    alert(
+        "🎉 FILM SOLD!\n\n"+
+        "+"+
+        "$"+price+
+        "\n\n"+
+        "You now have $"+
+        money
+    );
+
+
+    currentFilm.sold=true;
+
+}
+
+
+/* =========================
+   MY FILMS
+========================= */
+
+function openFilms(){
+
+    document.getElementById(
+        "studio"
+    ).style.display="none";
+
+    document.getElementById(
+        "films"
+    ).style.display="block";
+
+
+    renderFilms();
+
+}
+
+
+function renderFilms(){
+
+    var list =
+        document.getElementById(
+            "filmList"
+        );
+
+    list.innerHTML="";
+
+
+    if(films.length===0){
+
+        list.innerHTML =
+            "<h2>You haven't made any films yet.</h2>";
+
+        return;
+
+    }
+
+
+    films.forEach(
+        function(film,index){
+
+            var card =
+                document.createElement(
+                    "div"
+                );
+
+            card.className =
+                "filmCard";
+
+
+            var emoji =
+                film.clips[0].emoji;
+
+
+            card.innerHTML =
+
+                "<div class='filmPreview'>"+
+                emoji+
+                "</div>"+
+
+                "<h2>"+
+                film.title+
+                "</h2>"+
+
+                "<p>"+
+                film.clips.length+
+                " clips</p>"+
+
+                "<p>Rating: "+
+                calculateSavedRating(film)+
+                "/100</p>"+
+
+                "<p>Value: $"+
+                calculateSavedValue(film)+
+                "</p>";
+
+
+            list.appendChild(card);
+
+        }
+    );
+
+}
+
+
+function calculateSavedRating(film){
+
+    var total=0;
+
+    film.clips.forEach(
+        function(c){
+
+            total+=c.quality;
+
+        }
+    );
+
+
+    var average =
+        total /
+        film.clips.length;
+
+
+    var bonus=0;
+
+
+    if(film.music!=="none")
+        bonus+=7;
+
+    if(film.effect!=="none")
+        bonus+=7;
+
+    if(film.clips.length>=4)
+        bonus+=8;
+
+    if(film.clips.length>=6)
+        bonus+=5;
+
+
+    return Math.min(
+        100,
+        Math.round(
+            average*.75+
+            bonus
+        )
+    );
+
+}
+
+
+function calculateSavedValue(film){
+
+    return Math.round(
+        calculateSavedRating(film)*5
+    );
+
+}
+
+
+/* =========================
+   MARKET
+========================= */
+
+function openMarket(){
+
+    document.getElementById(
+        "studio"
+    ).style.display="none";
+
+    document.getElementById(
+        "market"
+    ).style.display="block";
+
+}
+
+
+function backToStudio(){
+
+    document.querySelectorAll(
+        ".screen"
+    ).forEach(
+        function(screen){
+
+            screen.style.display="none";
+
+        }
+    );
+
+
+    document.getElementById(
+        "studio"
+    ).style.display="block";
+
+}
+
+
+function closeEditor(){
+
+    document.getElementById(
+        "editor"
+    ).style.display="none";
+
+    document.getElementById(
+        "studio"
+    ).style.display="block";
+
+}
+
+
+/* =========================
+   MONEY
+========================= */
+
+function updateMoney(){
+
+    document.getElementById(
+        "money"
+    ).textContent =
+        "$"+money;
+
+}
+
+
+updateMoney();
+
+renderClips();
+
+</script>
+
+</body>
+</html>
